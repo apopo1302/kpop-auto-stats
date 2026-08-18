@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write  # 赋予 Actions 写入仓库的权限
+  contents: write
 
 jobs:
   build:
@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
