@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install dependencies
         run: npm install
@@ -26,15 +26,8 @@ jobs:
       - name: Run fetch script
         run: node fetch.js
 
-      - name: Commit and push changes
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          # 检查是否有文件改动
-          if [[ -n $(git status -s) ]]; then
-            git add fancams.json
-            git commit -m "Auto-update fancam data"
-            git push origin HEAD:main
-          else
-            echo "没有数据变动，跳过推送。"
-          fi
+      - name: Auto-commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-update fancam data"
+          file_pattern: fancams.json
