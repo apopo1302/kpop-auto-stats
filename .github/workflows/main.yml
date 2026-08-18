@@ -30,6 +30,11 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add fancams.json
-          git commit -m "Auto-update fancam data" || exit 0
-          git push
+          # 检查是否有文件改动
+          if [[ -n $(git status -s) ]]; then
+            git add fancams.json
+            git commit -m "Auto-update fancam data"
+            git push origin HEAD:main
+          else
+            echo "没有数据变动，跳过推送。"
+          fi
