@@ -4,6 +4,35 @@ import fs from 'fs';
 const CHANNEL_URL = 'https://www.youtube.com/@SBSKPOP_ZOOM/videos';
 const DB_FILE = 'fancams.json';
 
+// 备用的 Invidious 公开 API 节点列表
+const INVIDIOUS_INSTANCES = [
+    'https://invidious.nerdvpn.de',
+    'https://vid.priv.au',
+    'https://inv.nadeko.net',
+    'https://invidious.projectsegfau.lt'
+];
+
+async function getVideoDetailsWithFallback(id) {
+    for (const instance of INVIDIOUS_INSTANCES) {
+        try {
+            const res = await axios.get(`${instance}/api/v1/videos/${id}`, { timeout: 4000 });
+            if (res.data && res.data.viewCount !== undefined) {
+                return {
+                    views: res.data.viewCount || 0,
+                    likes: res.data.likeCount || 0,
+                    comments: res.data.commentCount || 0,
+                    title: res.data.title || "Fancam Video"
+                };
+            }
+        } catch (e) {
+            // 当前节点失败，尝试下一个
+            continue;
+        }
+    }
+    // 所有节点都失败时，返回 null 而不是假数据 0，保留之前的状态或给个标记
+    return null;
+}
+
 async function main() {
     try {
         console.log("正在获取频道页面...");
@@ -29,14 +58,21 @@ async function main() {
             }
         }
 
-        const existingIds = new Set(existingData.map(v => v.id));
+        const existingMap = new Map(existingData.map(v => [v.id, v]));
         let addedCount = 0;
 
         for (const id of newIds) {
-            if (!existingIds.has(id)) {
+            if (!existingMap.has(id)) {
+                console.log(`正在获取新视频详情: ${id}`);
+                const details = await getVideoDetailsWithFallback(id);
+                
                 existingData.unshift({
                     id: id,
                     url: `https://www.youtube.com/watch?v=${id}`,
+                    title: details ? details.title : "Fancam Video",
+                    views: details ? details.views : 0,
+                    likes: details ? details.likes : 0,
+                    comments: details ? details.comments : 0,
                     addedAt: new Date().toISOString()
                 });
                 addedCount++;
