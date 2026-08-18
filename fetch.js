@@ -8,20 +8,12 @@ async function main() {
     try {
         console.log("正在获取频道页面...");
         const response = await axios.get(CHANNEL_URL, { 
-            headers: { 
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept-Language': 'en-US,en;q=0.9'
-            },
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
             timeout: 15000
         });
 
-        const html = response.data;
-
-        // 改进的正则：同时提取 videoId、title 和 views（观看数）
-        // YouTube 网页源码中通常包含带有这些数据的 JSON 片段
-        const videoIdRegex = /"videoId":"([a-zA-Z0-9_-]{11})"/g;
-        const matches = [...html.matchAll(videoIdRegex)];
-        const newIds = [...new Set(matches.map(m => m[1]))];
+        const regex = /"videoId":"([a-zA-Z0-9_-]{11})"/g;
+        const newIds = [...new Set([...response.data.matchAll(regex)].map(m => m[1]))];
 
         if (newIds.length === 0) {
             console.log("⚠️ 没有匹配到任何视频 ID。");
@@ -42,14 +34,9 @@ async function main() {
 
         for (const id of newIds) {
             if (!existingIds.has(id)) {
-                // 尝试从页面中粗略匹配该视频的标题或观看数（如果找不到则给个默认值）
                 existingData.unshift({
                     id: id,
                     url: `https://www.youtube.com/watch?v=${id}`,
-                    title: "Fancam Video", // 后续如果你需要可以在前端直接根据 ID 处理
-                    views: 0, // 公开接口不可靠时，先设为0或后续通过前端优化
-                    likes: 0,
-                    comments: 0,
                     addedAt: new Date().toISOString()
                 });
                 addedCount++;
