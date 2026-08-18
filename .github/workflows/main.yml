@@ -1,18 +1,24 @@
 name: Hourly Fetch Fancams
+
 on:
   schedule:
-    - cron: "0 * * * *" # 每小时的第0分运行一次
-  workflow_dispatch: # 允许你随时手动点击运行
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write  # 赋予 Actions 写入仓库的权限
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
