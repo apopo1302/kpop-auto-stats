@@ -1,12 +1,15 @@
 name: Auto Fetch YouTube Fancams
 
 on:
-  # 1. 抓取频率：每天定时自动跑一次
+  # 1. 抓取频率：每天北京时间早上 8 点自动跑一次（UTC 时间 0 点）
   schedule:
-    - cron: '0 0 * * *'  
+    - cron: '0 0 * * *' 
   
   # 2. 支持手动在 GitHub 页面点击 "Run workflow" 触发
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   update-data:
@@ -28,11 +31,11 @@ jobs:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           CHANNEL_ID: "UCM3jwNRfl5-W8VzgT6DsaEQ"
           MAX_RESULTS: "200"          # 抓取最近 200 条
-          TARGET_DATE: "260817"       # 指定特定日期过滤
-        run: node scripts/fetch.cjs   # 👈 这里已经帮你改成了 .cjs 后缀
+          TARGET_DATE: ""             # 留空则默认抓取最新，不强制限定某一天
+        run: node fetch.js            # 确保你的抓取脚本直接放在仓库根目录下，并命名为 fetch.js
 
       - name: Auto-commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto-update fancam data (200 items)"
+          commit_message: "Auto-update fancam data"
           file_pattern: "fancams.json"
