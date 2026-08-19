@@ -26,4 +26,4 @@ jobs:
           CHANNEL_ID: "UCM3jwNRfl5-W8VzgT6DsaEQ"
           MAX_RESULTS: "200"          # 想抓取最近多少条
           TARGET_DATE: "260817"      # 如果你想指定只留特定日期的视频
-        run: node scripts/fetch.cjs
+        run: node scripts/fetch.js
