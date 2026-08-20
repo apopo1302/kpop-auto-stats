@@ -30,9 +30,9 @@ jobs:
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           CHANNEL_ID: "UCM3jwNRfl5-W8VzgT6DsaEQ"
-          MAX_RESULTS: "200"          # 抓取最近 200 条
-          TARGET_DATE: ""             # 留空则默认抓取最新，不强制限定某一天
-        run: node fetch.js            # 确保你的抓取脚本直接放在仓库根目录下，并命名为 fetch.js
+          MAX_RESULTS: "200"
+          TARGET_DATE: ""
+        run: node fetch.js
 
       - name: Auto-commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
