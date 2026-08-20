@@ -1,5 +1,4 @@
 import fs from 'fs';
-import fetch from 'node-fetch'; // 如果用 Node 18，全局自带 fetch，也可以直接用
 
 const API_KEY = process.env.YOUTUBE_API_KEY;
 const CHANNEL_ID = process.env.CHANNEL_ID || "UCM3jwNRfl5-W8VzgT6DsaEQ";
